@@ -9,8 +9,8 @@ const server = http.createServer(app);
 
 app.use(
   cors({
-    origin: "https://code-to-destiny-client-seven.vercel.app/",
-    credentials: true,
+    origin: "https://code-to-destiny-client-seven.vercel.app",
+    credentials: true, // If your client application sends credentials (e.g., cookies), set this to true
   })
 );
 
