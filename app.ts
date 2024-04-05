@@ -21,7 +21,7 @@ app.use(cookieParser());
 // cors => cross origin resource sharing
 app.use(
   cors({
-    origin: ["https://code-to-destiny-client.vercel.app/"],
+    origin: ["https://code-to-destiny-client-seven.vercel.app/"],
     credentials: true,
   })
 );
