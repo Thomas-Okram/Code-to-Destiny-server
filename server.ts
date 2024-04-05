@@ -5,8 +5,8 @@ import { initSocketServer } from "./socketServer";
 import { app } from "./app";
 import cors from "cors";
 require("dotenv").config();
-const server = http.createServer(app);
 
+// Apply CORS middleware before defining any routes
 app.use(
   cors({
     origin: "https://code-to-destiny-client-seven.vercel.app",
@@ -20,6 +20,8 @@ cloudinary.config({
   api_key: process.env.CLOUD_API_KEY,
   api_secret: process.env.CLOUD_SECRET_KEY,
 });
+
+const server = http.createServer(app);
 
 initSocketServer(server);
 
