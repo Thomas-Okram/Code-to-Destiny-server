@@ -13,6 +13,7 @@ require("dotenv").config();
 const server = http_1.default.createServer(app_1.app);
 app_1.app.use((0, cors_1.default)({
     origin: "https://code-to-destiny-client-seven.vercel.app/",
+    credentials: true,
 }));
 // cloudinary config
 cloudinary_1.v2.config({

@@ -19,12 +19,12 @@ app.use(express.json({ limit: "50mb" }));
 app.use(cookieParser());
 
 // cors => cross origin resource sharing
-app.use(
-  cors({
-    origin: ["https://code-to-destiny-client-seven.vercel.app/"],
-    credentials: true,
-  })
-);
+// app.use(
+//   cors({
+//     origin: ["https://code-to-destiny-client-seven.vercel.app/"],
+//     credentials: true,
+//   })
+// );
 
 // api requests limit
 const limiter = rateLimit({

@@ -10,6 +10,7 @@ const server = http.createServer(app);
 app.use(
   cors({
     origin: "https://code-to-destiny-client-seven.vercel.app/",
+    credentials: true,
   })
 );
 
