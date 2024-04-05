@@ -10,10 +10,13 @@ const socketServer_1 = require("./socketServer");
 const app_1 = require("./app");
 const cors_1 = __importDefault(require("cors"));
 require("dotenv").config();
-const server = http_1.default.createServer(app_1.app);
+// Apply CORS middleware before defining any routes
 app_1.app.use((0, cors_1.default)({
-    origin: "https://code-to-destiny-client-seven.vercel.app/",
+    origin: "https://code-to-destiny-client-seven.vercel.app",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    // If your client application sends credentials (e.g., cookies), set this to true
 }));
 // cloudinary config
 cloudinary_1.v2.config({
@@ -21,6 +24,7 @@ cloudinary_1.v2.config({
     api_key: process.env.CLOUD_API_KEY,
     api_secret: process.env.CLOUD_SECRET_KEY,
 });
+const server = http_1.default.createServer(app_1.app);
 (0, socketServer_1.initSocketServer)(server);
 // create server
 server.listen(process.env.PORT, () => {
