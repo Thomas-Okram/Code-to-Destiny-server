@@ -8,8 +8,12 @@ const http_1 = __importDefault(require("http"));
 const db_1 = __importDefault(require("./utils/db"));
 const socketServer_1 = require("./socketServer");
 const app_1 = require("./app");
+const cors_1 = __importDefault(require("cors"));
 require("dotenv").config();
 const server = http_1.default.createServer(app_1.app);
+app_1.app.use((0, cors_1.default)({
+    origin: "https://code-to-destiny-client-seven.vercel.app/",
+}));
 // cloudinary config
 cloudinary_1.v2.config({
     cloud_name: process.env.CLOUD_NAME,
