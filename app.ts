@@ -18,11 +18,22 @@ app.use(express.json({ limit: "50mb" }));
 // cookie parser
 app.use(cookieParser());
 
-// cors => cross origin resource sharing
+// // cors => cross origin resource sharing
+// app.use(
+//   cors({
+//     origin: ["https://code-to-destiny-client-seven.vercel.app/"],
+//     credentials: true,
+//   })
+// );
+
+// Apply CORS middleware before defining any routes
 app.use(
   cors({
-    origin: ["https://code-to-destiny-client-seven.vercel.app/"],
+    origin: "https://code-to-destiny-client-seven.vercel.app",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    // If your client application sends credentials (e.g., cookies), set this to true
   })
 );
 

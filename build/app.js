@@ -21,10 +21,20 @@ const express_rate_limit_1 = require("express-rate-limit");
 exports.app.use(express_1.default.json({ limit: "50mb" }));
 // cookie parser
 exports.app.use((0, cookie_parser_1.default)());
-// cors => cross origin resource sharing
+// // cors => cross origin resource sharing
+// app.use(
+//   cors({
+//     origin: ["https://code-to-destiny-client-seven.vercel.app/"],
+//     credentials: true,
+//   })
+// );
+// Apply CORS middleware before defining any routes
 exports.app.use((0, cors_1.default)({
-    origin: ["https://code-to-destiny-client-seven.vercel.app/"],
+    origin: "https://code-to-destiny-client-seven.vercel.app",
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    // If your client application sends credentials (e.g., cookies), set this to true
 }));
 // api requests limit
 const limiter = (0, express_rate_limit_1.rateLimit)({

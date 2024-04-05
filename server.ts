@@ -6,17 +6,6 @@ import { app } from "./app";
 import cors from "cors";
 require("dotenv").config();
 
-// Apply CORS middleware before defining any routes
-app.use(
-  cors({
-    origin: "https://code-to-destiny-client-seven.vercel.app",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    // If your client application sends credentials (e.g., cookies), set this to true
-  })
-);
-
 // cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
