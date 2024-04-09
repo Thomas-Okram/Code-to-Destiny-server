@@ -30,7 +30,7 @@ exports.app.use((0, cookie_parser_1.default)());
 // );
 // Apply CORS middleware before defining any routes
 exports.app.use((0, cors_1.default)({
-    origin: "https://code-to-destiny-client-seven.vercel.app",
+    origin: ["https://www.codetodestiny.com","https://codetodestiny.com"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
