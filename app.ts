@@ -29,7 +29,9 @@ app.use(cookieParser());
 // Apply CORS middleware before defining any routes
 app.use(
   cors({
-    origin: "http://codetodestiny.com",
+    origin: [
+      "http://localhost:3000","https://www.codetodestiny.com","https://codetodestiny.com",
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

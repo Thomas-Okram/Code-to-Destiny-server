@@ -66,6 +66,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema(
       ],
       default: [],
     },
+  },
   { timestamps: true }
 );
 
