@@ -518,7 +518,7 @@ export const deleteCourseFromUser = CatchAsyncError(
       }
 
       const updatedUserCourses = user?.courses.filter(
-        (course: any) => course.courseId !== courseId
+        (course: any) => JSON.stringify(course.courseId) !== courseId
       );
 console.log(user?.courses,updatedUserCourses)
       user.courses = updatedUserCourses;
