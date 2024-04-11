@@ -144,22 +144,24 @@ export const getCourseByUser = CatchAsyncError(
       const courseId = req.params.id;
      
 
-//uncomment this out later when you implement payment
 
-      // const courseExists = userCourseList?.find(
-      //   (course: any) => course._id.toString() === courseId
-      // );
 
-      // if (!courseExists) {
-      //   return next(
-      //     new ErrorHandler("You are not eligible to access this course", 404)
-      //   );
-      // }
+      const courseExists = userCourseList?.find(
+        (course: any) => course._id.toString() === courseId
+      );
+
+      if (!courseExists) {
+        return next(
+          new ErrorHandler("You are not eligible to access this course", 404)
+        );
+      }
 
       const course = await CourseModel.findById(courseId);
-   //   if(!course)=>{
-     
-   //   }
+     if(!course){
+      return next(
+        new ErrorHandler("Course not found", 404)
+      )
+     }
       const content = course?.courseData;
 
       res.status(200).json({
@@ -325,20 +327,20 @@ interface IAddReviewData {
 export const addReview = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      //const userCourseList = req.user?.courses;
+      const userCourseList = req.user?.courses;
 
       const courseId = req.params.id;
 
       // check if courseId already exists in userCourseList based on _id
-      // const courseExists = userCourseList?.some(
-      //   (course: any) => course._id.toString() === courseId.toString()
-      // );
+      const courseExists = userCourseList?.some(
+        (course: any) => course._id.toString() === courseId.toString()
+      );
 
-      // if (!courseExists) {
-      //   return next(
-      //     new ErrorHandler("You are not eligible to access this course", 404)
-      //   );
-      // }
+      if (!courseExists) {
+        return next(
+          new ErrorHandler("You are not eligible to access this course", 404)
+        );
+      }
 
       const course = await CourseModel.findById(courseId);
      

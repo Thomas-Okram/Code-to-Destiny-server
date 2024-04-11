@@ -148,11 +148,9 @@ interface ILoginRequest {
 }
 
 export const loginUser = CatchAsyncError(
-  
   async (req: Request, res: Response, next: NextFunction) => {
-    console.log('loginuser')
+    console.log("loginuser");
     try {
-      
       const { email, password } = req.body as ILoginRequest;
 
       if (!email || !password) {
@@ -169,10 +167,9 @@ export const loginUser = CatchAsyncError(
       if (!isPasswordMatch) {
         return next(new ErrorHandler("Invalid email or password", 400));
       }
-   console.log('dhhdh',user)
+      console.log("dhhdh", user);
       sendToken(user, 200, res);
     } catch (error: any) {
-
       return next(new ErrorHandler(error.message, 400));
     }
   }
@@ -211,13 +208,13 @@ export const updateAccessToken = CatchAsyncError(
         return next(new ErrorHandler(message, 400));
       }
       const session = await redis.get(decoded.id as string);
-         
+
       if (!session) {
         return next(
           new ErrorHandler("Please login for access this resources!", 400)
         );
       }
-      
+
       const user = JSON.parse(session);
 
       const accessToken = jwt.sign(
@@ -426,6 +423,67 @@ export const getAllUsers = CatchAsyncError(
   }
 );
 
+// get specific user --- only for admin
+export const getSpecificUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id;
+      const user = await userModel.findById(id).select("+password");
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      res.status(200).json({
+        success: true,
+        user,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+// update user role --- only for admin
+interface IAdminUpdateUserInfo {
+  name?: string;
+  email?: string;
+  courseId?: string;
+  avatar?: string;
+}
+
+export const updateSpecificUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const id = req.params.id;
+      const { name, email, courseId } = req.body as IAdminUpdateUserInfo;
+      console.log(req.body);
+      const user = await userModel.findById(id);
+
+      if (name && user) {
+        user.name = name;
+      }
+      if (email && user) {
+        user.email = email;
+      }
+
+      if (courseId && user) {
+        user.courses.push({ courseId: courseId });
+      }
+
+      await user?.save();
+
+      console.log(user);
+      res.status(201).json({
+        success: true,
+        user,
+      });
+    } catch (error: any) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
 // update user role --- only for admin
 export const updateUserRole = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -434,7 +492,7 @@ export const updateUserRole = CatchAsyncError(
       const isUserExist = await userModel.findOne({ email });
       if (isUserExist) {
         const id = isUserExist._id;
-        updateUserRoleService(res,id, role);
+        updateUserRoleService(res, id, role);
       } else {
         res.status(400).json({
           success: false,
@@ -447,6 +505,35 @@ export const updateUserRole = CatchAsyncError(
   }
 );
 
+// Delete course from user --- only for admin
+export const deleteCourseFromUser = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id ,courseId} = req.params;
+    console.log(courseId)
+      const user = await userModel.findById(id);
+
+      if (!user) {
+        return next(new ErrorHandler("User not found", 404));
+      }
+
+      const updatedUserCourses = user?.courses.filter(
+        (course: any) => course.courseId !== courseId
+      );
+console.log(user?.courses,updatedUserCourses)
+      user.courses = updatedUserCourses;
+        console.log("userCourses",user.courses)
+      await user?.save();
+      res.status(200).json({
+        success: true,
+        message: "Course removed successfully",
+      });
+    } catch (error: any) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
 // Delete user --- only for admin
 export const deleteUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
