@@ -4,6 +4,7 @@ import ErrorHandler from "../utils/ErrorHandler";
 import cloudinary from "cloudinary";
 import { createCourse, getAllCoursesService } from "../services/course.service";
 import CourseModel, { IComment } from "../models/course.model";
+import userModel, { IUser } from "../models/user.model";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
 import path from "path";
@@ -140,19 +141,28 @@ export const getAllCourses = CatchAsyncError(
 export const getCourseByUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userCourseList = req.user?.courses;
+      const userCourseList = await userModel.findById(req.user?._id).select(
+        "courses"
+      )
       const courseId = req.params.id;
      
 
+console.log("courseList",userCourseList)
 
-
-      const courseExists = userCourseList?.find(
-        (course: any) => course.courseId.toString() === courseId
+      const courseExists = userCourseList?.courses.find(
+        (course: any) => {
+          if (courseId.match(/^[0-9a-fA-F]{24}$/)) {
+            return course?.courseId.toString() === courseId;
+          }else{
+            return course?.courseId === courseId
+          }
+           
+        }
       );
-
       if (!courseExists) {
+     
         return next(
-          new ErrorHandler("You are not eligible to access this course", 404)
+          new ErrorHandler("You are not eligible to access this course", 401)
         );
       }
 
@@ -481,6 +491,7 @@ export const generateVideoUrl = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { videoId } = req.body;
+      console.log(req.body)
       const response = await axios.post(
         `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
         { ttl: 300 },

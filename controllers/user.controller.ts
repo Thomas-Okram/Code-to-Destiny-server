@@ -167,7 +167,7 @@ export const loginUser = CatchAsyncError(
       if (!isPasswordMatch) {
         return next(new ErrorHandler("Invalid email or password", 400));
       }
-      console.log("dhhdh", user);
+     
       sendToken(user, 200, res);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
@@ -248,7 +248,7 @@ export const updateAccessToken = CatchAsyncError(
 );
 
 // get user info
-export const getUserInfo = CatchAsyncError(
+export const  getUserInfo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?._id;
@@ -518,8 +518,16 @@ export const deleteCourseFromUser = CatchAsyncError(
       }
 
       const updatedUserCourses = user?.courses.filter(
-        (course: any) => course.courseId.toString() !== courseId
+        (course: any) => {
+          //check if courseId is a mongoose object id
+          if (courseId.match(/^[0-9a-fA-F]{24}$/)) {
+            return course?.courseId.toString() !== courseId;
+          }else{
+            return course?.courseId !== courseId
+          }
+        }
       );
+      
 console.log(user?.courses,updatedUserCourses)
       user.courses = updatedUserCourses;
         console.log("userCourses",user.courses)
