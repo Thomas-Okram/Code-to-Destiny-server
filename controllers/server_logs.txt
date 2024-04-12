@@ -1,0 +1,104 @@
+[TAILING] Tailing last 15 lines for [all] processes (change the value with --lines option)
+/root/.pm2/pm2.log last 15 lines:
+PM2        | 2024-04-06T02:05:16: PM2 log: App [server:1] starting in -fork mode-
+PM2        | 2024-04-06T02:05:16: PM2 log: App [server:1] online
+PM2        | 2024-04-06T02:05:17: PM2 log: App [server:1] exited with code [1] via signal [SIGINT]
+PM2        | 2024-04-06T02:05:17: PM2 log: App [server:1] starting in -fork mode-
+PM2        | 2024-04-06T02:05:17: PM2 log: App [server:1] online
+PM2        | 2024-04-06T02:05:18: PM2 log: App [server:1] exited with code [1] via signal [SIGINT]
+PM2        | 2024-04-06T02:05:18: PM2 log: App [server:1] starting in -fork mode-
+PM2        | 2024-04-06T02:05:18: PM2 log: App [server:1] online
+PM2        | 2024-04-06T02:05:19: PM2 log: App [server:1] exited with code [1] via signal [SIGINT]
+PM2        | 2024-04-06T02:05:19: PM2 log: App [server:1] starting in -fork mode-
+PM2        | 2024-04-06T02:05:19: PM2 log: App [server:1] online
+PM2        | 2024-04-06T02:05:20: PM2 log: App [server:1] exited with code [1] via signal [SIGINT]
+PM2        | 2024-04-06T02:05:20: PM2 log: Script /root/code-to-destiny/Code-to-Destiny-server/build/server.js had too many unstable restarts (16). Stopped. "errored"
+PM2        | 2024-04-06T09:23:46: PM2 log: App [server:1] starting in -fork mode-
+PM2        | 2024-04-06T09:23:46: PM2 log: App [server:1] online
+
+/root/.pm2/logs/Code-to-Destiny-error.log last 15 lines:
+/root/.pm2/logs/Code-to-Destiny-out.log last 15 lines:
+0|Code-to- | A user connected
+0|Code-to- | A user disconnected
+0|Code-to- | A user disconnected
+0|Code-to- | A user connected
+0|Code-to- | A user connected
+0|Code-to- | A user connected
+0|Code-to- | A user connected
+0|Code-to- | A user disconnected
+0|Code-to- | A user disconnected
+0|Code-to- | A user disconnected
+0|Code-to- | A user disconnected
+0|Code-to- | A user connected
+0|Code-to- | A user connected
+0|Code-to- | A user disconnected
+0|Code-to- | A user disconnected
+
+/root/.pm2/logs/server-error.log last 15 lines:
+1|server   |     at listenInCluster (node:net:1945:12)
+1|server   |     at Server.listen (node:net:2037:7)
+1|server   |     at Object.<anonymous> (/root/code-to-destiny/Code-to-Destiny-server/build/server.js:21:8)
+1|server   |     at Module._compile (node:internal/modules/cjs/loader:1369:14)
+1|server   |     at Module._extensions..js (node:internal/modules/cjs/loader:1427:10)
+1|server   |     at Module.load (node:internal/modules/cjs/loader:1206:32)
+1|server   |     at Module._load (node:internal/modules/cjs/loader:1022:12)
+1|server   |     at Object.<anonymous> (/root/.nvm/versions/node/v20.12.1/lib/node_modules/pm2/lib/ProcessContainerFork.js:33:23)
+1|server   |     at Module._compile (node:internal/modules/cjs/loader:1369:14) {
+1|server   |   code: 'EADDRINUSE',
+1|server   |   errno: -98,
+1|server   |   syscall: 'listen',
+1|server   |   address: '::',
+1|server   |   port: 8000
+1|server   | }
+
+/root/.pm2/logs/client-out.log last 15 lines:
+3|client   |   isUnhandledError: [33mfalse[39m,
+3|client   |   meta: {
+3|client   |     request: Request {
+3|client   |       [[32mSymbol(state)[39m]: [36m[Object][39m,
+3|client   |       [[32mSymbol(realm)[39m]: [36m[Object][39m,
+3|client   |       [[32mSymbol(headers)[39m]: [36m[HeadersList][39m,
+3|client   |       [[32mSymbol(signal)[39m]: [36m[AbortSignal][39m
+3|client   |     },
+3|client   |     response: Response {
+3|client   |       [[32mSymbol(realm)[39m]: [1mnull[22m,
+3|client   |       [[32mSymbol(state)[39m]: [36m[Object][39m,
+3|client   |       [[32mSymbol(headers)[39m]: [36m[HeadersList][39m
+3|client   |     }
+3|client   |   }
+3|client   | }
+
+/root/.pm2/logs/client-error.log last 15 lines:
+3|client   | https://next-auth.js.org/errors#oauth_callback_error State cookie was missing. {
+3|client   |   error: TypeError: State cookie was missing.
+3|client   |       at Object.use [90m(/root/code-to-destiny/Code-to-Destiny-Client/[39mnode_modules/[4mnext-auth[24m/core/lib/oauth/checks.js:103:23[90m)[39m
+3|client   |       at oAuthCallback [90m(/root/code-to-destiny/Code-to-Destiny-Client/[39mnode_modules/[4mnext-auth[24m/core/lib/oauth/callback.js:89:25[90m)[39m
+3|client   |   [90m    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)[39m
+3|client   |       at async Object.callback [90m(/root/code-to-destiny/Code-to-Destiny-Client/[39mnode_modules/[4mnext-auth[24m/core/routes/callback.js:52:11[90m)[39m
+3|client   |       at async AuthHandler [90m(/root/code-to-destiny/Code-to-Destiny-Client/[39mnode_modules/[4mnext-auth[24m/core/index.js:208:28[90m)[39m
+3|client   |       at async NextAuthApiHandler [90m(/root/code-to-destiny/Code-to-Destiny-Client/[39mnode_modules/[4mnext-auth[24m/next/index.js:22:19[90m)[39m
+3|client   |       at async NextAuth._args$ [90m(/root/code-to-destiny/Code-to-Destiny-Client/[39mnode_modules/[4mnext-auth[24m/next/index.js:107:14[90m)[39m {
+3|client   |     name: [32m'OAuthCallbackError'[39m,
+3|client   |     code: [90mundefined[39m
+3|client   |   },
+3|client   |   providerId: [32m'google'[39m,
+3|client   |   message: [32m'State cookie was missing.'[39m
+3|client   | }
+
+/root/.pm2/logs/server-out.log last 15 lines:
+1|server   |   __v: 0
+1|server   | }
+1|server   | loginuser
+1|server   | dhhdh {
+1|server   |   _id: new ObjectId("661081285157961682f8fba7"),
+1|server   |   name: 'new acc',
+1|server   |   email: 'haalandmctavish@gmail.com',
+1|server   |   password: '$2a$10$hC8O.U3Cy2GdBFOrBAu3rO6qXmfR/56v/wSe2987NwU1NDk1H9cH2',
+1|server   |   role: 'user',
+1|server   |   isVerified: false,
+1|server   |   courses: [],
+1|server   |   createdAt: 2024-04-05T22:54:32.847Z,
+1|server   |   updatedAt: 2024-04-05T22:54:32.847Z,
+1|server   |   __v: 0
+1|server   | }
+
