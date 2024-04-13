@@ -503,6 +503,7 @@ export const generateVideoUrl = CatchAsyncError(
           },
         }
       );
+      console.log("response",response)
       res.json(response.data);
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
