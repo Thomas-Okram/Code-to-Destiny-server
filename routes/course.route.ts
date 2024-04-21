@@ -4,7 +4,10 @@ import {
   addQuestion,
   addReplyToReview,
   addReview,
+<<<<<<< HEAD
   addVideo,
+=======
+>>>>>>> 1cdd9a5265933a6f25aa5d7235e2f231363029da
   deleteCourse,
   editCourse,
   generateVideoUrl,
@@ -13,10 +16,15 @@ import {
   getCourseByUser,
   getSingleCourse,
   uploadCourse,
+<<<<<<< HEAD
   getCourseVideo
 } from "../controllers/course.controller";
 import { authorizeRoles, isAutheticated } from "../middleware/auth";
 import { videoUpload } from "../middleware/videoUpload";
+=======
+} from "../controllers/course.controller";
+import { authorizeRoles, isAutheticated } from "../middleware/auth";
+>>>>>>> 1cdd9a5265933a6f25aa5d7235e2f231363029da
 const courseRouter = express.Router();
 
 courseRouter.post(

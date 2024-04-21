@@ -19,8 +19,11 @@ app.use(express.json({ limit: "50mb" }));
 // cookie parser
 app.use(cookieParser());
 
+<<<<<<< HEAD
 app.use('/public',express.static(path.join(__dirname,'public')))
 
+=======
+>>>>>>> 1cdd9a5265933a6f25aa5d7235e2f231363029da
 // // cors => cross origin resource sharing
 // app.use(
 //   cors({
