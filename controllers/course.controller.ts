@@ -12,13 +12,14 @@ import ejs from "ejs";
 import sendMail from "../utils/sendMail";
 import NotificationModel from "../models/notification.Model";
 import axios from "axios";
-import CourseVideoSchema from "../models/videoModel"
+import CourseVideoSchema from "../models/videoModel";
 
 // upload course
 export const uploadCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
+      console.log(data)
       const thumbnail = data.thumbnail;
       if (thumbnail) {
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
@@ -30,7 +31,54 @@ export const uploadCourse = CatchAsyncError(
           url: myCloud.secure_url,
         };
       }
-      createCourse(data, res, next);
+      data.courseData = data.courseData.map((c: any) => {
+        // Create a new object without the 'video' property
+        const { video, ...updatedItem } = c;
+
+        updatedItem.videoUrl = "";
+
+        return updatedItem;
+      });
+
+      const course = await CourseModel.create(data);
+      if(!data.courseData[0].video){
+        return next(new ErrorHandler("Course creation failed,some sections have no video!", 500));
+      }
+
+      if (course) {
+        data.courseData.map(async(c: any) => {
+          //make a post request to /upload-course-video route to upload video
+          const { video, ...remainingItem } = c;
+
+          const formData = new FormData();
+          formData.append('video', video);
+          formData.append('title', c.title || "");
+          formData.append('description', c.description || "");
+          formData.append('courseId', course._id || "");
+          
+          const response = await axios.post('/upload-course-video', formData, {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+          });
+
+       const courseObject = course?.courseData.find((co: any) => co?.title === c?.title)
+       if(courseObject){
+        courseObject.videoUrl = response.data?.videoUrl || ""
+       }
+       await course.save();
+
+        }); 
+      } 
+      
+      if(!course){
+        return next(new ErrorHandler("Course creation failed", 500));
+      }
+      
+      res.status(201).json({
+        success: true,
+        course,
+      });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 500));
     }
@@ -47,7 +95,7 @@ export const editCourse = CatchAsyncError(
 
       const courseId = req.params.id;
 
-      const courseData = await CourseModel.findById(courseId) as any;
+      const courseData = (await CourseModel.findById(courseId)) as any;
 
       if (thumbnail && !thumbnail.startsWith("https")) {
         await cloudinary.v2.uploader.destroy(courseData.thumbnail.public_id);
@@ -92,7 +140,7 @@ export const getSingleCourse = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const courseId = req.params.id;
-      console.log(courseId)
+      console.log(courseId);
 
       const isCacheExist = await redis.get(courseId);
 
@@ -142,37 +190,30 @@ export const getAllCourses = CatchAsyncError(
 export const getCourseByUser = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const userCourseList = await userModel.findById(req.user?._id).select(
-        "courses"
-      )
+      const userCourseList = await userModel
+        .findById(req.user?._id)
+        .select("courses");
       const courseId = req.params.id;
-     
 
-console.log("courseList",userCourseList)
+      console.log("courseList", userCourseList);
 
-      const courseExists = userCourseList?.courses.find(
-        (course: any) => {
-          if (courseId.match(/^[0-9a-fA-F]{24}$/)) {
-            return course?.courseId.toString() === courseId;
-          }else{
-            return course?.courseId === courseId
-          }
-           
+      const courseExists = userCourseList?.courses.find((course: any) => {
+        if (courseId.match(/^[0-9a-fA-F]{24}$/)) {
+          return course?.courseId.toString() === courseId;
+        } else {
+          return course?.courseId === courseId;
         }
-      );
+      });
       if (!courseExists) {
-     
         return next(
           new ErrorHandler("You are not eligible to access this course", 401)
         );
       }
 
       const course = await CourseModel.findById(courseId);
-     if(!course){
-      return next(
-        new ErrorHandler("Course not found", 404)
-      )
-     }
+      if (!course) {
+        return next(new ErrorHandler("Course not found", 404));
+      }
       const content = course?.courseData;
 
       res.status(200).json({
@@ -354,7 +395,7 @@ export const addReview = CatchAsyncError(
       }
 
       const course = await CourseModel.findById(courseId);
-     
+
       const { review, rating } = req.body as IAddReviewData;
 
       const reviewData: any = {
@@ -385,7 +426,6 @@ export const addReview = CatchAsyncError(
         title: "New Review Received",
         message: `${req.user?.name} has given a review in ${course?.name}`,
       });
-
 
       res.status(200).json({
         success: true,
@@ -435,7 +475,7 @@ export const addReplyToReview = CatchAsyncError(
       }
 
       review.commentReplies?.push(replyData);
-      
+
       await course?.save();
 
       await redis.set(courseId, JSON.stringify(course), "EX", 604800); // 7days
@@ -492,7 +532,7 @@ export const generateVideoUrl = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { videoId } = req.body;
-      console.log(req.body)
+      console.log(req.body);
       const response = await axios.post(
         `https://dev.vdocipher.com/api/videos/${videoId}/otp`,
         { ttl: 300 },
@@ -511,70 +551,68 @@ export const generateVideoUrl = CatchAsyncError(
   }
 );
 
+export const addVideo = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { title, description, courseId } = req.body;
+     
 
-export const addVideo = CatchAsyncError(async(req: Request, res: Response, next: NextFunction)=>{
- try{
-  const {title,description,courseId  } = req.body;
-  console.log(req.body)
-console.log(req?.file)
+      if (req.file) {
+        const video = new CourseVideoSchema({
+          title,
+          description,
+          courseId,
+          filename: req.file.filename,
+          videoUrl: req.file.path,
+        });
+        await video.save();
+        res.status(200).json({
+          success: true,
+          message: "Video uploaded successfully",
+          video,
+        });
+        console.log(req.file.filename,"uploaded successfully")
+      }
 
-  if(req.file){
-  const video =  new CourseVideoSchema({
-    title,
-    description,
-    courseId,
-    filename: req.file.filename,
-    videoUrl: req.file.path
-  })
-  await video.save();
-  res.status(200).json({
-    success:true,
-    message:"Video uploaded successfully",
-    video
-  })
-}
-
-if(!req.file){
-  res.status(404).json({
-    success:false,
-    message:"no file found"
-  })
-}
- 
-
-
-}
-  catch(error:any){
-    return next(new ErrorHandler(error.message, 400));
+      if (!req.file) {
+        res.status(404).json({
+          success: false,
+          message: "no file found",
+        });
+      }
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
   }
-})
+);
 
-export const getAllCourseVideos = CatchAsyncError(async (req: Request, res: Response, next: NextFunction)=>{
-  try{
-const videos = await CourseVideoSchema.find();
-res.status(200).json({
-  success:true,
-  videos
-})
-}
-  catch(error:any){
-    return next(new ErrorHandler(error.message, 400));
+export const getAllCourseVideos = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const videos = await CourseVideoSchema.find();
+      res.status(200).json({
+        success: true,
+        videos,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
   }
-})
+);
 
-
-export const getCourseVideo = CatchAsyncError(async (req: Request, res: Response, next: NextFunction)=>{
-  try{
-    console.log("hitting",req.params)
-    const {courseId}=req.params
-const videos = await CourseVideoSchema.find({courseId:courseId});
-console.log(videos)
-res.status(200).json({
-  success:true,
-  videos
-})
-}
-  catch(error:any){
-    return next(new ErrorHandler(error.message, 400));
+export const getCourseVideo = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      console.log("hitting", req.params);
+      const { courseId } = req.params;
+      const videos = await CourseVideoSchema.find({ courseId: courseId });
+      console.log(videos);
+      res.status(200).json({
+        success: true,
+        videos,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
   }
-})
+);
