@@ -36,27 +36,46 @@ export const uploadCourse = CatchAsyncError(
         const { video, ...updatedItem } = c;
 
         updatedItem.videoUrl = "";
+       
 
         return updatedItem;
       });
-
-      const course = await CourseModel.create(data);
+      // data.demoVideo = "";
+       const updatedData = {...data,demoVideo:""}
+       //console.log(updatedData)
+      const course = await CourseModel.create(updatedData);
+      console.log(data.courseData[0].video,"course",course)
       if(!data.courseData[0].video){
         return next(new ErrorHandler("Course creation failed,some sections have no video!", 500));
       }
 
       if (course) {
+        async function uploadDemoVideo (){
+
+          data.demoVideo.append('title', data.name || "");
+          data.demoVideo.append('description', data.description || "");
+          data.demoVideo.append('courseId', course._id || "");
+          
+          const response = await axios.post('/upload-course-video', data.demoVideo, {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+          });
+          
+          course.demoVideo = response.data?.videoUrl;
+        }
+        uploadDemoVideo();
         data.courseData.map(async(c: any) => {
           //make a post request to /upload-course-video route to upload video
           const { video, ...remainingItem } = c;
 
-          const formData = new FormData();
-          formData.append('video', video);
-          formData.append('title', c.title || "");
-          formData.append('description', c.description || "");
-          formData.append('courseId', course._id || "");
+          // const formData = new FormData();
+          // formData.append('video', video);
+          video.append('title', c.title || "");
+          video.append('description', c.description || "");
+          video.append('courseId', course._id || "");
           
-          const response = await axios.post('/upload-course-video', formData, {
+          const response = await axios.post('/upload-course-video', video, {
               headers: {
                 'Content-Type': 'multipart/form-data'
               }
