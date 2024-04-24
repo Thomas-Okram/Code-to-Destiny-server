@@ -20,6 +20,10 @@ export const uploadCourse = CatchAsyncError(
     try {
       const data = req.body;
       console.log(data)
+      if(data == {}){
+        return next(new ErrorHandler("no course data amigo", 500));
+
+      }
       const thumbnail = data.thumbnail;
       if (thumbnail) {
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
@@ -51,12 +55,18 @@ export const uploadCourse = CatchAsyncError(
 
       if (course) {
         async function uploadDemoVideo (){
+          const blob = new Blob([data.demoVideo]);
+const file = new File([blob], data.name);
 
-          data.demoVideo.append('title', data.name || "");
-          data.demoVideo.append('description', data.description || "");
-          data.demoVideo.append('courseId', course._id || "");
-          
-          const response = await axios.post('/upload-course-video', data.demoVideo, {
+const formData = new FormData();
+formData.append('video', file);
+
+// Make sure to send the request with the FormData object
+          formData.append('title', data.name || "");
+          formData.append('description', data.description || "");
+          formData.append('courseId', course._id || "");
+          console.log("formdata",formData)
+          const response = await axios.post('/upload-course-video', formData, {
               headers: {
                   'Content-Type': 'multipart/form-data'
               }
@@ -65,29 +75,29 @@ export const uploadCourse = CatchAsyncError(
           course.demoVideo = response.data?.videoUrl;
         }
         uploadDemoVideo();
-        data.courseData.map(async(c: any) => {
-          //make a post request to /upload-course-video route to upload video
-          const { video, ...remainingItem } = c;
+      //   data.courseData.map(async(c: any) => {
+      //     //make a post request to /upload-course-video route to upload video
+      //     const { video, ...remainingItem } = c;
 
-          // const formData = new FormData();
-          // formData.append('video', video);
-          video.append('title', c.title || "");
-          video.append('description', c.description || "");
-          video.append('courseId', course._id || "");
+      //     // const formData = new FormData();
+      //     // formData.append('video', video);
+      //     video.append('title', c.title || "");
+      //     video.append('description', c.description || "");
+      //     video.append('courseId', course._id || "");
           
-          const response = await axios.post('/upload-course-video', video, {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-          });
+      //     const response = await axios.post('/upload-course-video', video, {
+      //         headers: {
+      //           'Content-Type': 'multipart/form-data'
+      //         }
+      //     });
 
-       const courseObject = course?.courseData.find((co: any) => co?.title === c?.title)
-       if(courseObject){
-        courseObject.videoUrl = response.data?.videoUrl || ""
-       }
-       await course.save();
+      //  const courseObject = course?.courseData.find((co: any) => co?.title === c?.title)
+      //  if(courseObject){
+      //   courseObject.videoUrl = response.data?.videoUrl || ""
+      //  }
+      //  await course.save();
 
-        }); 
+      //   }); 
       } 
       
       if(!course){
@@ -99,6 +109,7 @@ export const uploadCourse = CatchAsyncError(
         course,
       });
     } catch (error: any) {
+      console.log(error)
       return next(new ErrorHandler(error.message, 500));
     }
   }
