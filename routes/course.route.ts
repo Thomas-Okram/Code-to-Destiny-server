@@ -13,7 +13,9 @@ import {
   getCourseByUser,
   getSingleCourse,
   uploadCourse,
-  getCourseVideo
+  getCourseVideo,
+  getAllCourseVideos,
+  deleteCourseVideo
 } from "../controllers/course.controller";
 import { authorizeRoles, isAutheticated } from "../middleware/auth";
 import { videoUpload } from "../middleware/videoUpload";
@@ -70,6 +72,8 @@ courseRouter.delete(
 
 //remeber to add isAuthenticated and admin only middlewares here
 courseRouter.post("/upload-course-video", videoUpload.single("video"),addVideo)
+courseRouter.get("/get-videos",  isAutheticated,authorizeRoles("admin"),getAllCourseVideos)
 courseRouter.get("/get-course-video/:courseId",getCourseVideo)
+courseRouter.delete("/delete-course-video/:id/:fileName",isAutheticated,authorizeRoles("admin"),deleteCourseVideo)
 
 export default courseRouter;

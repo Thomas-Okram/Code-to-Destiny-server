@@ -8,6 +8,7 @@ import userModel, { IUser } from "../models/user.model";
 import { redis } from "../utils/redis";
 import mongoose from "mongoose";
 import path from "path";
+import fs from "fs";
 import ejs from "ejs";
 import sendMail from "../utils/sendMail";
 import NotificationModel from "../models/notification.Model";
@@ -20,10 +21,10 @@ export const uploadCourse = CatchAsyncError(
     try {
       const data = req.body;
       console.log(data)
-      if(data == {}){
-        return next(new ErrorHandler("no course data amigo", 500));
+      // if(data == {}){
+      //   return next(new ErrorHandler("no course data amigo", 500));
 
-      }
+      // }
       const thumbnail = data.thumbnail;
       if (thumbnail) {
         const myCloud = await cloudinary.v2.uploader.upload(thumbnail, {
@@ -38,20 +39,16 @@ export const uploadCourse = CatchAsyncError(
       data.courseData = data.courseData.map((c: any) => {
         // Create a new object without the 'video' property
         const { video, ...updatedItem } = c;
-
-        updatedItem.videoUrl = "";
        
 
         return updatedItem;
       });
-      // data.demoVideo = "";
-       const updatedData = {...data,demoVideo:""}
-       //console.log(updatedData)
-      const course = await CourseModel.create(updatedData);
-      console.log(data.courseData[0].video,"course",course)
-      if(!data.courseData[0].video){
-        return next(new ErrorHandler("Course creation failed,some sections have no video!", 500));
-      }
+      
+      const course = await CourseModel.create(data);
+      console.log("course",course)
+      // if(!data.courseData[0].video){
+      //   return next(new ErrorHandler("Course creation failed,some sections have no video!", 500));
+      // }
 
       if (course) {
         async function uploadDemoVideo (){
@@ -74,7 +71,7 @@ formData.append('video', file);
           
           course.demoVideo = response.data?.videoUrl;
         }
-        uploadDemoVideo();
+    
       //   data.courseData.map(async(c: any) => {
       //     //make a post request to /upload-course-video route to upload video
       //     const { video, ...remainingItem } = c;
@@ -633,13 +630,49 @@ export const getAllCourseVideos = CatchAsyncError(
 export const getCourseVideo = CatchAsyncError(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      console.log("hitting", req.params);
       const { courseId } = req.params;
       const videos = await CourseVideoSchema.find({ courseId: courseId });
-      console.log(videos);
+    //  console.log(videos);
       res.status(200).json({
         success: true,
         videos,
+      });
+    } catch (error: any) {
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+
+export const deleteCourseVideo = CatchAsyncError(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, fileName } = req.params;
+
+      const video = await CourseVideoSchema.findById(id);
+
+      if (!video) {
+        return next(new ErrorHandler("Video not found", 404));
+      }
+
+      // Delete the file using fs.unlink
+      const filePath = path.join(__dirname, '../public/videos', fileName);
+      console.log("deleteinng",filePath)
+      fs.unlink(filePath, async (err) => {
+        if (err) {
+          return next(new ErrorHandler("Error deleting video file", 500));
+        }
+
+        // Delete the video document from the database
+        await video.deleteOne({ id });
+
+        // Delete from redis
+       // await redis.del(id);
+
+        res.status(200).json({
+          success: true,
+          message: "Video deleted successfully",
+        });
       });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
