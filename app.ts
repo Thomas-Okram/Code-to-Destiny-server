@@ -33,7 +33,9 @@ app.use('/public',express.static(path.join(__dirname,'public')))
 app.use(
   cors({
     origin: [
-      "http://localhost:3000","https://www.codetodestiny.com","https://codetodestiny.com",
+      "http://localhost:3000","https://code-to-destiny-git-master-aww2ers-projects.vercel.app",
+"https://code-to-destiny-prmyhgq6l-aww2ers-projects.vercel.app",
+"https://code-to-destiny.vercel.app"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
