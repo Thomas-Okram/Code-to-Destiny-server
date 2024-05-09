@@ -32,7 +32,7 @@ exports.app.use('/public', express_1.default.static(path_1.default.join(__dirnam
 // );
 // Apply CORS middleware before defining any routes
 exports.app.use((0, cors_1.default)({
-    origin: ['code-to-destiny.vercel.app', "https://code-to-destiny-git-master-aww2ers-projects.vercel.app", "https://code-to-destiny-prmyhgq6l-aww2ers-projects.vercel.app", "https://code-to-destiny.vercel.app"],
+    origin: ['code-to-destiny.vercel.app', "https://code-to-destiny-git-master-aww2ers-projects.vercel.app", "https://code-to-destiny-prmyhgq6l-aww2ers-projects.vercel.app", "https://code-to-destiny.vercel.app", "http://localhost:3000"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

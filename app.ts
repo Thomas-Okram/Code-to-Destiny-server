@@ -32,7 +32,7 @@ app.use('/public',express.static(path.join(__dirname,'public')))
 // Apply CORS middleware before defining any routes
 app.use(
   cors({
-    origin: ['code-to-destiny.vercel.app',"https://code-to-destiny-git-master-aww2ers-projects.vercel.app","https://code-to-destiny-prmyhgq6l-aww2ers-projects.vercel.app","https://code-to-destiny.vercel.app"],
+    origin: ['code-to-destiny.vercel.app',"https://code-to-destiny-git-master-aww2ers-projects.vercel.app","https://code-to-destiny-prmyhgq6l-aww2ers-projects.vercel.app","https://code-to-destiny.vercel.app","http://localhost:3000"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
