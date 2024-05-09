@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const course_controller_1 = require("../controllers/course.controller");
 const auth_1 = require("../middleware/auth");
+const videoUpload_1 = require("../middleware/videoUpload");
 const courseRouter = express_1.default.Router();
 courseRouter.post("/create-course", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), course_controller_1.uploadCourse);
 courseRouter.put("/edit-course/:id", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), course_controller_1.editCourse);
@@ -19,4 +20,9 @@ courseRouter.put("/add-review/:id", auth_1.isAutheticated, course_controller_1.a
 courseRouter.put("/add-reply", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), course_controller_1.addReplyToReview);
 courseRouter.post("/getVdoCipherOTP", course_controller_1.generateVideoUrl);
 courseRouter.delete("/delete-course/:id", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), course_controller_1.deleteCourse);
+//remeber to add isAuthenticated and admin only middlewares here
+courseRouter.post("/upload-course-video", videoUpload_1.videoUpload.single("video"), course_controller_1.addVideo);
+courseRouter.get("/get-videos", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), course_controller_1.getAllCourseVideos);
+courseRouter.get("/get-course-video/:courseId", course_controller_1.getCourseVideo);
+courseRouter.delete("/delete-course-video/:id/:fileName", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), course_controller_1.deleteCourseVideo);
 exports.default = courseRouter;

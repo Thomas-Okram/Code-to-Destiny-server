@@ -17,6 +17,9 @@ userRouter.put("/update-user-info", auth_1.isAutheticated, user_controller_1.upd
 userRouter.put("/update-user-password", auth_1.isAutheticated, user_controller_1.updatePassword);
 userRouter.put("/update-user-avatar", auth_1.isAutheticated, user_controller_1.updateProfilePicture);
 userRouter.get("/get-users", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), user_controller_1.getAllUsers);
+userRouter.get("/get-user/:id", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), user_controller_1.getSpecificUser);
+userRouter.put("/update-specific-user/:id", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), user_controller_1.updateSpecificUser);
 userRouter.put("/update-user", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), user_controller_1.updateUserRole);
+userRouter.delete("/delete-course-from-user/:id/:courseId", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), user_controller_1.deleteCourseFromUser);
 userRouter.delete("/delete-user/:id", auth_1.isAutheticated, (0, auth_1.authorizeRoles)("admin"), user_controller_1.deleteUser);
 exports.default = userRouter;

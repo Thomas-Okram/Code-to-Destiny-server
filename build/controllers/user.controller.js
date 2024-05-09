@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUserRole = exports.getAllUsers = exports.updateProfilePicture = exports.updatePassword = exports.updateUserInfo = exports.socialAuth = exports.getUserInfo = exports.updateAccessToken = exports.logoutUser = exports.loginUser = exports.activateUser = exports.createActivationToken = exports.registrationUser = void 0;
+exports.deleteUser = exports.deleteCourseFromUser = exports.updateUserRole = exports.updateSpecificUser = exports.getSpecificUser = exports.getAllUsers = exports.updateProfilePicture = exports.updatePassword = exports.updateUserInfo = exports.socialAuth = exports.getUserInfo = exports.updateAccessToken = exports.logoutUser = exports.loginUser = exports.activateUser = exports.createActivationToken = exports.registrationUser = void 0;
 require("dotenv").config();
 const user_model_1 = __importDefault(require("../models/user.model"));
 const ErrorHandler_1 = __importDefault(require("../utils/ErrorHandler"));
@@ -90,7 +90,7 @@ exports.activateUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, 
     }
 });
 exports.loginUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
-    console.log('loginuser');
+    console.log("loginuser");
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -104,7 +104,6 @@ exports.loginUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, nex
         if (!isPasswordMatch) {
             return next(new ErrorHandler_1.default("Invalid email or password", 400));
         }
-        console.log('dhhdh', user);
         (0, jwt_1.sendToken)(user, 200, res);
     }
     catch (error) {
@@ -280,6 +279,50 @@ exports.getAllUsers = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, n
         return next(new ErrorHandler_1.default(error.message, 400));
     }
 });
+// get specific user --- only for admin
+exports.getSpecificUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const user = await user_model_1.default.findById(id).select("+password");
+        if (!user) {
+            return next(new ErrorHandler_1.default("User not found", 404));
+        }
+        res.status(200).json({
+            success: true,
+            user,
+        });
+    }
+    catch (error) {
+        return next(new ErrorHandler_1.default(error.message, 400));
+    }
+});
+exports.updateSpecificUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
+    try {
+        const id = req.params.id;
+        const { name, email, courseId } = req.body;
+        console.log(req.body);
+        const user = await user_model_1.default.findById(id);
+        if (name && user) {
+            user.name = name;
+        }
+        if (email && user) {
+            user.email = email;
+        }
+        if (courseId && user) {
+            user.courses.push({ courseId: courseId });
+        }
+        await user?.save();
+        console.log(user);
+        res.status(201).json({
+            success: true,
+            user,
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return next(new ErrorHandler_1.default(error.message, 400));
+    }
+});
 // update user role --- only for admin
 exports.updateUserRole = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
     try {
@@ -297,6 +340,38 @@ exports.updateUserRole = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res
         }
     }
     catch (error) {
+        return next(new ErrorHandler_1.default(error.message, 400));
+    }
+});
+// Delete course from user --- only for admin
+exports.deleteCourseFromUser = (0, catchAsyncErrors_1.CatchAsyncError)(async (req, res, next) => {
+    try {
+        const { id, courseId } = req.params;
+        console.log(courseId);
+        const user = await user_model_1.default.findById(id);
+        if (!user) {
+            return next(new ErrorHandler_1.default("User not found", 404));
+        }
+        const updatedUserCourses = user?.courses.filter((course) => {
+            //check if courseId is a mongoose object id
+            if (courseId.match(/^[0-9a-fA-F]{24}$/)) {
+                return course?.courseId.toString() !== courseId;
+            }
+            else {
+                return course?.courseId !== courseId;
+            }
+        });
+        console.log(user?.courses, updatedUserCourses);
+        user.courses = updatedUserCourses;
+        console.log("userCourses", user.courses);
+        await user?.save();
+        res.status(200).json({
+            success: true,
+            message: "Course removed successfully",
+        });
+    }
+    catch (error) {
+        console.log(error);
         return next(new ErrorHandler_1.default(error.message, 400));
     }
 });

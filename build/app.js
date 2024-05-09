@@ -17,10 +17,12 @@ const notification_route_1 = __importDefault(require("./routes/notification.rout
 const analytics_route_1 = __importDefault(require("./routes/analytics.route"));
 const layout_route_1 = __importDefault(require("./routes/layout.route"));
 const express_rate_limit_1 = require("express-rate-limit");
+const path_1 = __importDefault(require("path"));
 // body parser
 exports.app.use(express_1.default.json({ limit: "50mb" }));
 // cookie parser
 exports.app.use((0, cookie_parser_1.default)());
+exports.app.use('/public', express_1.default.static(path_1.default.join(__dirname, 'public')));
 // // cors => cross origin resource sharing
 // app.use(
 //   cors({
@@ -30,7 +32,7 @@ exports.app.use((0, cookie_parser_1.default)());
 // );
 // Apply CORS middleware before defining any routes
 exports.app.use((0, cors_1.default)({
-    origin:["http://localhost:3000","https://code-to-destiny-git-master-aww2ers-projects.vercel.app","https://code-to-destiny-prmyhgq6l-aww2ers-projects.vercel.app","https://code-to-destiny.vercel.app", 'code-to-destiny.vercel.app'],
+    origin: ['code-to-destiny.vercel.app', "https://code-to-destiny-git-master-aww2ers-projects.vercel.app", "https://code-to-destiny-prmyhgq6l-aww2ers-projects.vercel.app", "https://code-to-destiny.vercel.app"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

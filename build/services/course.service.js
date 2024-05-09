@@ -7,12 +7,9 @@ exports.getAllCoursesService = exports.createCourse = void 0;
 const course_model_1 = __importDefault(require("../models/course.model"));
 const catchAsyncErrors_1 = require("../middleware/catchAsyncErrors");
 // create course
-exports.createCourse = (0, catchAsyncErrors_1.CatchAsyncError)(async (data, res) => {
+exports.createCourse = (0, catchAsyncErrors_1.CatchAsyncError)(async (data) => {
     const course = await course_model_1.default.create(data);
-    res.status(201).json({
-        success: true,
-        course
-    });
+    return course;
 });
 // Get All Courses
 const getAllCoursesService = async (res) => {

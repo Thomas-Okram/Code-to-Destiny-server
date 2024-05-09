@@ -89,9 +89,8 @@ const courseSchema = new mongoose_1.Schema({
         type: String,
         required: true,
     },
-    demoUrl: {
+    demoVideo: {
         type: String,
-        required: true,
     },
     benefits: [{ title: String }],
     prerequisites: [{ title: String }],
